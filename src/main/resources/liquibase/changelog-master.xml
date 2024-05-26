@@ -1,0 +1,11 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+	<include file="/liquibase/Spring Security configuration.xml"/>
+	<include file="liquibase/Add inventory table.xml"/>
+	<include file="liquibase/Add truck table.xml"/>
+	<include file="liquibase/Add order table.xml"/>
+	<include file="liquibase/Add delivery tables.xml"/>
+
+</databaseChangeLog>
+

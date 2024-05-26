@@ -1,0 +1,36 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="Add delivery tables" author="dioncakeri" runOnChange="true">
+
+        <sql>
+            DROP TABLE IF EXISTS delivery;
+
+            CREATE TABLE delivery (
+                                         id int PRIMARY KEY auto_increment,
+                                         delivery_date DATE
+            );
+
+            DROP TABLE IF EXISTS delivery_truck;
+
+            CREATE TABLE delivery_truck (
+                                      id int PRIMARY KEY auto_increment,
+                                      delivery_id int,
+                                      truck_id int,
+                                      FOREIGN KEY (delivery_id) REFERENCES `delivery` (id),
+                                      FOREIGN KEY (truck_id) REFERENCES `truck` (id)
+            );
+
+            DROP TABLE IF EXISTS delivery_truck_order;
+
+            CREATE TABLE delivery_truck_order (
+                                            delivery_truck_id int,
+                                            order_id int,
+                                            FOREIGN KEY (delivery_truck_id) REFERENCES `delivery_truck` (id),
+                                            FOREIGN KEY (order_id) REFERENCES `orders` (order_number)
+            );
+
+        </sql>
+
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,45 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="Add order table" author="dioncakeri" runOnChange="true">
+
+        <sql>
+
+            DROP TABLE IF EXISTS order_items;
+            DROP TABLE IF EXISTS `order`;
+            DROP TABLE IF EXISTS order_status;
+
+            CREATE TABLE order_status (
+                                         id int PRIMARY KEY auto_increment,
+                                         status varchar(20)
+            );
+            INSERT INTO order_status(status) VALUES("CREATED");
+            INSERT INTO order_status(status) VALUES("AWAITING_APPROVAL");
+            INSERT INTO order_status(status) VALUES("APPROVED");
+            INSERT INTO order_status(status) VALUES("DECLINED");
+            INSERT INTO order_status(status) VALUES("UNDER_DELIVERY");
+            INSERT INTO order_status(status) VALUES("FULFILLED");
+            INSERT INTO order_status(status) VALUES("CANCELLED");
+
+            CREATE TABLE `orders` (
+                                   order_number int PRIMARY KEY auto_increment,
+                                   user_id int,
+                                   submitted_date DATE,
+                                   order_status_id int,
+                                   deadline_date DATE,
+                                   FOREIGN KEY (order_status_id) REFERENCES order_status (id),
+                                   FOREIGN KEY (user_id) REFERENCES user (id)
+            );
+
+            CREATE TABLE order_items (
+                                          order_id int,
+                                          item_id int,
+                                          requested_quantity int,
+                                          FOREIGN KEY (order_id) REFERENCES `orders` (order_number),
+                                          FOREIGN KEY (item_id) REFERENCES inventory_item (id),
+                                          PRIMARY KEY(order_id, item_id)
+            );
+        </sql>
+
+    </changeSet>
+</databaseChangeLog>

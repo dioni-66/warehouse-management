@@ -1,0 +1,49 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="Spring Security configuration" author="dioncakeri" runOnChange="true">
+
+        <sql>
+            create table if not exists authority (
+                id bigint not null auto_increment,
+                name varchar(50) not null,
+                primary key (id)) auto_increment=1;
+
+            create table if not exists user (
+                id int not null auto_increment,
+                email varchar(50) not null,
+                enabled boolean not null,
+                firstname varchar(50) not null,
+                lastname varchar(50) not null,
+                password varchar(100) not null,
+                username varchar(50) not null,
+                last_login datetime,
+                primary key (id),
+                unique(username)) auto_increment=1;
+
+            create table if not exists user_authority (
+                user_id int not null,
+                authority_id bigint not null,
+                foreign key (authority_id) references authority(id),
+                foreign key (user_id) references user(id));
+
+            INSERT IGNORE INTO AUTHORITY (NAME) VALUES ('ROLE_CLIENT');
+            INSERT IGNORE INTO AUTHORITY (NAME) VALUES ('ROLE_WAREHOUSE_MANAGER');
+            INSERT IGNORE INTO AUTHORITY (NAME) VALUES ('ROLE_ADMIN');
+
+            INSERT IGNORE INTO USER (USERNAME, PASSWORD, FIRSTNAME, LASTNAME, EMAIL, ENABLED)
+            VALUES ('admin', '21232f297a57a5a743894a0e4a801fc3', 'admin', 'admin', 'admin@warehousemanagement.com', 1);
+            INSERT IGNORE INTO USER_AUTHORITY (USER_ID, AUTHORITY_ID) VALUES ((SELECT id FROM USER WHERE USER.USERNAME='admin'), (SELECT id FROM authority WHERE authority.name='ROLE_ADMIN'));
+
+            INSERT IGNORE INTO USER (USERNAME, PASSWORD, FIRSTNAME, LASTNAME, EMAIL, ENABLED)
+            VALUES ('client', '62608e08adc29a8d6dbc9754e659f125', 'client', 'client', 'client@warehousemanagement.com', 1);
+            INSERT IGNORE INTO USER_AUTHORITY (USER_ID, AUTHORITY_ID) VALUES ((SELECT id FROM USER WHERE USER.USERNAME='client'), (SELECT id FROM authority WHERE authority.name='ROLE_CLIENT'));
+
+            INSERT IGNORE INTO USER (USERNAME, PASSWORD, FIRSTNAME, LASTNAME, EMAIL, ENABLED)
+            VALUES ('manager', '1d0258c2440a8d19e716292b231e3190', 'manager', 'manager', 'manager@warehousemanagement.com', 1);
+            INSERT IGNORE INTO USER_AUTHORITY (USER_ID, AUTHORITY_ID) VALUES ((SELECT id FROM USER WHERE USER.USERNAME='manager'), (SELECT id FROM authority WHERE authority.name='ROLE_WAREHOUSE_MANAGER'));
+
+        </sql>
+
+    </changeSet>
+</databaseChangeLog>

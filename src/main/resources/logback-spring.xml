@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+
+	<include resource="org/springframework/boot/logging/logback/defaults.xml" />
+
+	<property name="LOG_FILE"
+		value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-logs}/}warehouse_management.log}" />
+
+	<springProperty name="CONSOLE_THRESHOLD" source="logging.threshold.console" />
+
+	<appender name="APPLICATION_FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_FILE}</file>
+		<!-- Support multiple-JVM writing to the same log file -->
+		<!-- <prudent>true</prudent> -->
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+			<maxHistory>31</maxHistory>
+			<cleanHistoryOnStart>true</cleanHistoryOnStart>
+		</rollingPolicy>
+		<encoder>
+			<!-- FILE_LOG_PATTERN from defaults.xml -->
+			<pattern>${FILE_LOG_PATTERN:-%d{yyyy-MM-dd HH:mm:ss.SSS} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="APPLICATION_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>${CONSOLE_THRESHOLD}</level>
+		</filter>
+		<encoder>
+			<!-- CONSOLE_LOG_PATTERN from defaults.xml -->
+			<pattern>${CONSOLE_LOG_PATTERN:-%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}</pattern>
+		</encoder>
+	</appender>h
+
+	<jmxConfigurator />
+
+	<root level="INFO">
+		<appender-ref ref="APPLICATION_CONSOLE" />
+		<appender-ref ref="APPLICATION_FILE" />
+	</root>
+
+ 	<logger name="org.hibernate.SQL" level="INFO" />
+
+	<logger name="com.warehousemanagement" level="INFO" />
+	<logger name="com.warehousemanagement.configuration.security" level="DEBUG" />
+	
+</configuration>
