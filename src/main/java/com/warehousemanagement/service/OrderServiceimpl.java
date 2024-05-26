@@ -63,6 +63,10 @@ public class OrderServiceimpl implements OrderService {
     public AddItemResponseDTO addItemToOrder(int orderId, int itemId, int quantity) {
         InventoryItemEntity inventoryItemEntity = inventoryItemRepository.findById(itemId).orElseThrow(() -> new IllegalArgumentException("Invalid item id"));
         OrdersEntity ordersEntity = ordersRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("Invalid order number"));
+        List<String> validOrderStatuses = List.of(OrderStatus.CREATED.getValue(), OrderStatus.DECLINED.getValue());
+        if(!validOrderStatuses.contains(ordersEntity.getOrderStatus().getStatus())){
+            return new AddItemResponseDTO("Order status must be CREATED/DECLINED");
+        }
         checkItemAvailability(inventoryItemEntity.getQuantity(), quantity);
 
         OrderItemsEntity orderItemsEntity = new OrderItemsEntity();
@@ -84,6 +88,10 @@ public class OrderServiceimpl implements OrderService {
     public String removeItemFromOrder(int orderId, int itemId) {
         try {
             OrderItemsEntity orderItemEntity = orderItemsRepository.getByOrder_OrderNumberAndInventoryItem_Id(orderId, itemId);
+            List<String> validOrderStatuses = List.of(OrderStatus.CREATED.getValue(), OrderStatus.DECLINED.getValue());
+            if(!validOrderStatuses.contains(orderItemEntity.getOrder().getOrderStatus().getStatus())){
+                return "Order status must be CREATED/DECLINED";
+            }
             orderItemsRepository.delete(orderItemEntity);
             return "Item removed successfully";
         } catch (Exception e){
@@ -93,6 +101,11 @@ public class OrderServiceimpl implements OrderService {
 
     @Override
     public String updateItemQuantity(int orderId, int itemId, int quantity) {
+        OrdersEntity ordersEntity = ordersRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("Invalid order number"));
+        List<String> validOrderStatuses = List.of(OrderStatus.CREATED.getValue(), OrderStatus.DECLINED.getValue());
+        if(!validOrderStatuses.contains(ordersEntity.getOrderStatus().getStatus())){
+            return "Order status must be CREATED/DECLINED";
+        }
         InventoryItemEntity inventoryItemEntity = inventoryItemRepository.findById(itemId).orElseThrow(() -> new IllegalArgumentException("Invalid item id"));
         checkItemAvailability(inventoryItemEntity.getQuantity(), quantity);
 
